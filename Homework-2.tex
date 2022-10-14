@@ -33,6 +33,14 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Homework 2},
+  pdfauthor={Maya Sinha},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -94,16 +102,8 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
-\hypersetup{
-  pdftitle={HW 2 (temporary)},
-  pdfauthor={Maya Sinha},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
 
-\title{HW 2 (temporary)}
+\title{Homework 2}
 \author{Maya Sinha}
 \date{2022-10-06}
 
@@ -158,11 +158,9 @@ Age seems to have normal distribution with a slight right skewed nature.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{abalone\_recipe }\OtherTok{\textless{}{-}} \FunctionTok{recipe}\NormalTok{(age }\SpecialCharTok{\textasciitilde{}}\NormalTok{  type }\SpecialCharTok{+}\NormalTok{ longest\_shell }\SpecialCharTok{+}\NormalTok{ diameter }\SpecialCharTok{+}\NormalTok{ height }\SpecialCharTok{+}\NormalTok{  whole\_weight }\SpecialCharTok{+}\NormalTok{ shucked\_weight }\SpecialCharTok{+}\NormalTok{ viscera\_weight  }\SpecialCharTok{+}\NormalTok{ shell\_weight, }\AttributeTok{data =}\NormalTok{ abalone\_train) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{step\_dummy\_multi\_choice}\NormalTok{(}\FunctionTok{all\_nominal\_predictors}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%} 
-  \CommentTok{\#step\_interact(\textasciitilde{} type:shucked\_weight) \%\textgreater{}\%\#}
-  \FunctionTok{step\_interact}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ longest\_shell}\SpecialCharTok{:}\NormalTok{diameter) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{step\_interact}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ shucked\_weight}\SpecialCharTok{:}\NormalTok{shell\_weight) }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{abalone\_recipe }\OtherTok{\textless{}{-}} \FunctionTok{recipe}\NormalTok{(age }\SpecialCharTok{\textasciitilde{}}\NormalTok{ type }\SpecialCharTok{+}\NormalTok{ longest\_shell }\SpecialCharTok{+}\NormalTok{ diameter }\SpecialCharTok{+}\NormalTok{ height }\SpecialCharTok{+}\NormalTok{   whole\_weight }\SpecialCharTok{+}\NormalTok{ shucked\_weight }\SpecialCharTok{+}\NormalTok{ viscera\_weight  }\SpecialCharTok{+}\NormalTok{ shell\_weight, }\AttributeTok{data =}\NormalTok{ abalone\_train) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{step\_dummy}\NormalTok{(}\FunctionTok{all\_nominal\_predictors}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{step\_interact}\NormalTok{(}\AttributeTok{terms =} \SpecialCharTok{\textasciitilde{}} \FunctionTok{starts\_with}\NormalTok{(}\StringTok{"type"}\NormalTok{)}\SpecialCharTok{:}\NormalTok{shucked\_weight }\SpecialCharTok{+}\NormalTok{ longest\_shell}\SpecialCharTok{:}\NormalTok{diameter }\SpecialCharTok{+}\NormalTok{ shucked\_weight}\SpecialCharTok{:}\NormalTok{shell\_weight) }\SpecialCharTok{\%\textgreater{}\%} 
   \FunctionTok{step\_center}\NormalTok{(}\FunctionTok{all\_predictors}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%} 
   \FunctionTok{step\_scale}\NormalTok{(}\FunctionTok{all\_predictors}\NormalTok{())}
 
@@ -181,12 +179,14 @@ Age seems to have normal distribution with a slight right skewed nature.
 ## 
 ## Operations:
 ## 
-## Multi-choice dummy variables from all_nominal_predictors()
-## Interactions with longest_shell:diameter
-## Interactions with shucked_weight:shell_weight
+## Dummy variables from all_nominal_predictors()
+## Interactions with starts_with("type"):shucked_weight + longest_shell...
 ## Centering for all_predictors()
 ## Scaling for all_predictors()
 \end{verbatim}
+
+We do not use rings to predict age because age is directly based on
+rings (age = 1.5 * number of rings).
 
 \hypertarget{question-4}{%
 \subsubsection{Question 4}\label{question-4}}
@@ -220,22 +220,78 @@ Age seems to have normal distribution with a slight right skewed nature.
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 13 x 5
-##    term                          estimate std.error statistic   p.value
-##    <chr>                            <dbl>     <dbl>     <dbl>     <dbl>
-##  1 (Intercept)                    11.4       0.0385    297.    0       
-##  2 longest_shell                   0.691     0.298       2.32  2.05e- 2
-##  3 diameter                        3.07      0.327       9.38  1.22e-20
-##  4 height                          0.241     0.0717      3.36  7.81e- 4
-##  5 whole_weight                    5.40      0.421      12.8   8.12e-37
-##  6 shucked_weight                 -4.12      0.253     -16.3   3.93e-57
-##  7 viscera_weight                 -0.956     0.166      -5.76  9.18e- 9
-##  8 shell_weight                    1.52      0.218       6.96  4.13e-12
-##  9 type_F                         -0.0721    0.0439     -1.64  1.00e- 1
-## 10 type_I                         -0.365     0.0524     -6.97  3.83e-12
-## 11 type_M                         NA        NA          NA    NA       
-## 12 longest_shell_x_diameter       -3.96      0.413      -9.61  1.50e-21
-## 13 shucked_weight_x_shell_weight  -0.221     0.207      -1.07  2.85e- 1
+## # A tibble: 14 x 5
+##    term                          estimate std.error statistic  p.value
+##    <chr>                            <dbl>     <dbl>     <dbl>    <dbl>
+##  1 (Intercept)                    11.4       0.0383   298.    0       
+##  2 longest_shell                   0.388     0.302      1.29  1.98e- 1
+##  3 diameter                        2.74      0.330      8.29  1.73e-16
+##  4 height                          0.227     0.0713     3.18  1.50e- 3
+##  5 whole_weight                    5.40      0.419     12.9   4.18e-37
+##  6 shucked_weight                 -4.51      0.262    -17.2   1.55e-63
+##  7 viscera_weight                 -0.921     0.165     -5.58  2.63e- 8
+##  8 shell_weight                    1.42      0.219      6.48  1.08e-10
+##  9 type_I                         -0.897     0.118     -7.59  4.17e-14
+## 10 type_M                         -0.257     0.107     -2.40  1.66e- 2
+## 11 type_I_x_shucked_weight         0.503     0.0884     5.70  1.34e- 8
+## 12 type_M_x_shucked_weight         0.377     0.114      3.31  9.27e- 4
+## 13 longest_shell_x_diameter       -3.38      0.423     -8.00  1.71e-15
+## 14 shucked_weight_x_shell_weight  -0.0665    0.209     -0.318 7.51e- 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{abalone\_fit}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## == Workflow [trained] ==========================================================
+## Preprocessor: Recipe
+## Model: linear_reg()
+## 
+## -- Preprocessor ----------------------------------------------------------------
+## 4 Recipe Steps
+## 
+## * step_dummy()
+## * step_interact()
+## * step_center()
+## * step_scale()
+## 
+## -- Model -----------------------------------------------------------------------
+## 
+## Call:
+## stats::lm(formula = ..y ~ ., data = data)
+## 
+## Coefficients:
+##                   (Intercept)                  longest_shell  
+##                      11.43389                        0.38787  
+##                      diameter                         height  
+##                       2.73792                        0.22670  
+##                  whole_weight                 shucked_weight  
+##                       5.39961                       -4.50661  
+##                viscera_weight                   shell_weight  
+##                      -0.92143                        1.41659  
+##                        type_I                         type_M  
+##                      -0.89675                       -0.25695  
+##       type_I_x_shucked_weight        type_M_x_shucked_weight  
+##                       0.50329                        0.37657  
+##      longest_shell_x_diameter  shucked_weight_x_shell_weight  
+##                      -3.38185                       -0.06648
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{new\_abalone }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{type =} \StringTok{"F"}\NormalTok{, }\AttributeTok{longest\_shell =} \FloatTok{0.50}\NormalTok{, }\AttributeTok{diameter =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{height =} \FloatTok{0.3}\NormalTok{, }\AttributeTok{whole\_weight =} \DecValTok{4}\NormalTok{, }\AttributeTok{shucked\_weight =} \DecValTok{1}\NormalTok{, }\AttributeTok{viscera\_weight =} \DecValTok{2}\NormalTok{, }\AttributeTok{shell\_weight =} \DecValTok{1}\NormalTok{, }\AttributeTok{rings =} \DecValTok{0}\NormalTok{)}
+\FunctionTok{predict}\NormalTok{(abalone\_fit, }\AttributeTok{new\_data =}\NormalTok{ new\_abalone)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 1
+##   .pred
+##   <dbl>
+## 1  24.1
 \end{verbatim}
 
 \hypertarget{question-7}{%
@@ -244,55 +300,9 @@ Age seems to have normal distribution with a slight right skewed nature.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{abalone\_train\_res }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(abalone\_fit, }\AttributeTok{new\_data =}\NormalTok{ abalone\_train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{age))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## Warning in predict.lm(object = object$fit, newdata = new_data, type =
-## "response"): prediction from a rank-deficient fit may be misleading
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{abalone\_train\_res }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{head}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## # A tibble: 6 x 1
-##   .pred
-##   <dbl>
-## 1 10.4 
-## 2 10.7 
-## 3  6.25
-## 4  5.60
-## 5  5.77
-## 6  8.85
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{abalone\_train\_res }\OtherTok{\textless{}{-}} \FunctionTok{bind\_cols}\NormalTok{(abalone\_train\_res, abalone\_train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(age))}
-\NormalTok{abalone\_train\_res }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{head}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## # A tibble: 6 x 2
-##   .pred   age
-##   <dbl> <dbl>
-## 1 10.4    8.5
-## 2 10.7    9.5
-## 3  6.25   6.5
-## 4  5.60   6.5
-## 5  5.77   5.5
-## 6  8.85   8.5
-\end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{abalone\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{metric\_set}\NormalTok{(rmse, rsq, mae)}
 \FunctionTok{abalone\_metrics}\NormalTok{(abalone\_train\_res, }\AttributeTok{truth =}\NormalTok{ age, }
                 \AttributeTok{estimate =}\NormalTok{ .pred)}
@@ -303,9 +313,9 @@ Age seems to have normal distribution with a slight right skewed nature.
 ## # A tibble: 3 x 3
 ##   .metric .estimator .estimate
 ##   <chr>   <chr>          <dbl>
-## 1 rmse    standard       2.15 
-## 2 rsq     standard       0.558
-## 3 mae     standard       1.55
+## 1 rmse    standard       2.14 
+## 2 rsq     standard       0.562
+## 3 mae     standard       1.54
 \end{verbatim}
 
 interpret

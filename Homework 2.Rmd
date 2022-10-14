@@ -2,7 +2,7 @@
 title: "Homework 2"
 author: "Maya Sinha"
 date: "2022-10-06"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -47,13 +47,13 @@ abalone_test <- testing(abalone_split)
 ```{r}
 abalone_recipe <- recipe(age ~ type + longest_shell + diameter + height +	whole_weight + shucked_weight + viscera_weight	+ shell_weight, data = abalone_train) %>% 
   step_dummy(all_nominal_predictors()) %>% 
-  step_interact(terms = ~ starts_with(type):shucked_weight + longest_shell:diameter + shucked_weight:shell_weight) %>% 
+  step_interact(terms = ~ starts_with("type"):shucked_weight + longest_shell:diameter + shucked_weight:shell_weight) %>% 
   step_center(all_predictors()) %>% 
   step_scale(all_predictors())
 
 abalone_recipe
 ```
-We do not use rings to predict age because age is directly based on rings. Age is equal to 1.5 plus the value of rings, hence we cannot use rings to predict age because the information is the same. 
+We do not use rings to predict age because age is directly based on rings (age = 1.5 * number of rings). 
 
 
 ### Question 4
@@ -61,8 +61,6 @@ We do not use rings to predict age because age is directly based on rings. Age i
 ```{r}
 lm_model <- linear_reg() %>% 
   set_engine("lm")
-
-lm_model
 ```
 
 ### Question 5
@@ -71,8 +69,6 @@ lm_model
 lm_wflow <- workflow() %>% 
   add_model(lm_model) %>% 
   add_recipe(abalone_recipe)
-
-lm_wflow
 ```
 
 ### Question 6
@@ -102,4 +98,4 @@ abalone_metrics(abalone_train_res, truth = age,
                 estimate = .pred)
 ```
 
-interpret
+The model is moderately strong because the $R^{2}$ value is .56 on a scale from 0 to 1. 
